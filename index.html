@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#050605">
 <title>تدبّر</title>
+<meta http-equiv="Cache-Control" content="no-cache">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -71,7 +72,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family
   <button class="cb" id="prev" aria-label="الآية السابقة"><svg viewBox="0 0 24 24"><path d="M19 6l-8 6 8 6V6zm-8 0l-8 6 8 6V6z"/></svg></button>
   <button class="cb" id="rep" aria-label="تكرار الآية"><svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg></button>
  </div>
- <audio id="a" preload="auto"></audio>
+ <audio id="a" preload="metadata"></audio>
 </div>
 <script>
 const tg=window.Telegram&&Telegram.WebApp;if(tg){try{tg.ready();tg.expand();tg.setHeaderColor('#050605');tg.setBackgroundColor('#050605');tg.disableVerticalSwipes&&tg.disableVerticalSwipes()}catch(e){}}
@@ -86,7 +87,7 @@ fetch((q.get('d')||'data.json')+'?v='+Date.now()).then(r=>r.json()).then(d=>{
  const f=$('flow');f.innerHTML=d.words.map((w,i)=>`<span class="w${w.end?' e':''}" data-i="${i}">${w.t}</span> `).join('');
  spans=[...f.querySelectorAll('span.w')];spans.forEach(sp=>sp.onclick=()=>{const i=+sp.dataset.i;let best=-1;for(let k=0;k<ev.length;k++)if(ev[k][1]===i){best=k;break}if(best>=0)a.currentTime=ev[best][0]});
  a.src=d.audio;const t=parseFloat(q.get('t'));if(t>0)a.addEventListener('loadedmetadata',()=>{a.currentTime=t},{once:true});
- document.fonts.ready.then(()=>{setWord(0,true);tick()});
+ setWord(0,true);tick();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{lastTop=-1;setWord(cur<0?0:cur,true)}).catch(()=>{});setTimeout(()=>{lastTop=-1;setWord(cur<0?0:cur,true)},1500);
 });
 function find(t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m][0]<=t){r=m;lo=m+1}else hi=m-1}return r}
 function setWord(w,force){
