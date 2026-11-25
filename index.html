@@ -34,7 +34,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family
 #stage::-webkit-scrollbar{display:none}
 .vcard{background:#fff;border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 40px rgba(20,32,28,.08),0 2px 6px rgba(20,32,28,.04);padding:10px 16px 8px;position:relative}
 #chip{display:inline-block;font-size:12px;font-weight:600;color:var(--g);background:var(--gl);border-radius:20px;padding:1px 12px;line-height:1.9;margin:4px 0 2px}
-#win{height:calc(3 * var(--lh));overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(#0000,#000 14%,#000 86%,#0000);mask-image:linear-gradient(#0000,#000 14%,#000 86%,#0000)}
+#win{height:calc(4 * var(--lh));overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(#0000,#000 14%,#000 86%,#0000);mask-image:linear-gradient(#0000,#000 14%,#000 86%,#0000)}
 #flow{font-size:23px;line-height:var(--lh);text-align:center;width:100%;color:#98a39e;margin:0;transition:transform .35s cubic-bezier(.3,.7,.2,1);will-change:transform}
 #flow.pop{animation:pop .16s ease-out}
 @keyframes pop{from{opacity:.2}to{opacity:1}}
@@ -101,11 +101,11 @@ fetch((q.get('d')||'data.json')+'?v='+Date.now()).then(r=>r.json()).then(d=>{
 });
 function find(t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m][0]<=t){r=m;lo=m+1}else hi=m-1}return r}
 function relayout(){lastTop=-1;if(D&&curCard){measure();setWord(curWanted,true)}}
-function measure(){const f=$('flow'),lh=LH(),h=f.scrollHeight;base0=h<3*lh?Math.round((3*lh-h)/2):0}
+function measure(){const f=$('flow'),lh=LH(),h=f.scrollHeight;base0=h<4*lh?Math.round((4*lh-h)/2):0}
 function renderCard(c){
  const f=$('flow'),ids=cardIdx[c],v=D.verses[c];
  f.style.fontFamily="'"+v.font+"','KFGQPC',serif";f.style.fontSize=c==='basm'?'30px':'';
- f.innerHTML=ids.map(i=>`<span class="w${D.words[i].end?' e':''}" data-i="${i}">${D.words[i].t}</span> `).join('');
+ f.innerHTML=ids.map(i=>`<span class="w${D.words[i].end?' e':''}" data-i="${i}">${D.words[i].t}</span>${D.words[i].br?'<br>':' '}`).join('');
  spans=[...f.querySelectorAll('span.w')];
  spans.forEach(sp=>sp.onclick=()=>{const i=+sp.dataset.i;for(let k=0;k<ev.length;k++)if(ev[k][1]===i){a.currentTime=ev[k][0];break}});
  f.style.transition='none';f.style.transform='translateY(0)';lastTop=-1;
