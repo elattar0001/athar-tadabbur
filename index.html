@@ -10,14 +10,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#050605;--sheet:#0c0e0b;--card:#101310;--line:#232a1c;--lime:#c9e81f;--lime2:#9db615;--txt:#f2f4ee;--mut:#8f9886}
+:root{--bg:#040e07;--sheet:#06120a;--card:#11130c;--line:#25281c;--lime:#cda22f;--lime2:#a98421;--txt:#f2f4ee;--mut:#8f9886}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:'Noto Naskh Arabic',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
-#app{display:flex;flex-direction:column;height:100%;max-width:640px;margin:0 auto;background:linear-gradient(180deg,#0d100b 0%,var(--sheet) 40%);border-top:2px solid #20290f;border-radius:22px 22px 0 0;padding:10px 16px calc(14px + env(safe-area-inset-bottom));position:relative}
+#app{display:flex;flex-direction:column;height:100%;max-width:640px;margin:0 auto;background:var(--bg);border-top:2px solid #20290f;border-radius:22px 22px 0 0;padding:10px 16px calc(14px + env(safe-area-inset-bottom));position:relative}
 #app::before{content:"";position:absolute;top:0;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--lime),transparent);opacity:.8}
 #grab{width:44px;height:4px;border-radius:4px;background:#2d3a14;margin:2px auto 12px}
 #top{display:flex;align-items:center;gap:12px}
-#av{width:62px;height:62px;border-radius:50%;flex:none;display:grid;place-items:center;border:2px solid var(--lime);box-shadow:0 0 0 5px #11160a,0 0 0 6px #3a4a12,0 0 22px rgba(201,232,31,.25);background:radial-gradient(circle at 50% 40%,#1b2208,#0a0c06)}
+#av{width:62px;height:62px;border-radius:50%;flex:none;display:grid;place-items:center;border:2px solid var(--lime);box-shadow:0 0 0 5px #11160a,0 0 0 6px #3a4a12,0 0 22px rgba(205,162,47,.25);background:radial-gradient(circle at 50% 40%,#1b2208,#0a0c06)}
 #av svg{width:30px;height:30px;fill:none;stroke:var(--lime);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 #meta{flex:1;min-width:0;text-align:right}
 #title{font-size:15px;line-height:1.7;color:#f4f6ef;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -28,14 +28,16 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family
 @font-face{font-family:'KFGQPC';src:url(https://raw.githubusercontent.com/nuqayah/qpc-fonts/master/mushaf-v4-hafs/uthmanic_hafs_v22.ttf) format('truetype');font-display:block}
 #stage{flex:1;min-height:0;overflow-y:auto;padding:14px 0 6px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
 #stage::-webkit-scrollbar{display:none}
-.vcard{border:1px solid #2a3320;border-radius:16px;background:#0e110c;padding:6px 14px;text-align:right;position:relative}
-#win{height:calc(2 * var(--lh));overflow:hidden;position:relative}
-:root{--lh:46px}
-#flow{font-family:'KFGQPC','Noto Naskh Arabic',serif;font-size:21px;line-height:var(--lh);text-align:justify;text-align-last:right;color:#6f7766;transition:transform .45s cubic-bezier(.3,.7,.2,1);will-change:transform;margin:0;padding:0}
+.vcard{border:1px solid #25281c;border-radius:16px;background:#11130c;padding:8px 14px;text-align:center;position:relative}
+#win{height:calc(3 * var(--lh));overflow:hidden;position:relative}
+:root{--lh:48px}
+#flow{font-family:'KFGQPC','Noto Naskh Arabic',serif;font-size:21px;line-height:var(--lh);text-align:center;width:100%;color:#6f7766;transition:transform .45s cubic-bezier(.3,.7,.2,1);will-change:transform;margin:0;padding:0}
 #flow span.w{transition:color .15s}
 #flow span.d{color:#eef1e8}
-#flow span.c{color:var(--lime);text-shadow:0 0 14px rgba(201,232,31,.45)}
-#flow span.e{color:var(--lime2);font-size:.9em}
+#flow span.c{color:var(--lime);text-shadow:0 0 14px rgba(205,162,47,.45)}
+#flow span.e{color:var(--lime);font-size:.95em}
+#flow{opacity:1;transition:opacity .2s,transform .45s cubic-bezier(.3,.7,.2,1)}#flow.fade{opacity:0}
+#flow.card{text-align:center}
 #where{margin-top:2px;font-size:12px;color:var(--mut);text-align:center;padding-bottom:4px}
 #taf{border:1px solid var(--line);border-radius:16px;background:#0e110c;padding:12px 16px;text-align:right}
 #taf h4{margin:0 0 6px;font-size:13px;color:var(--lime);font-weight:600;display:flex;align-items:center;gap:6px}
@@ -79,38 +81,48 @@ const tg=window.Telegram&&Telegram.WebApp;if(tg){try{tg.ready();tg.expand();tg.s
 const $=id=>document.getElementById(id),a=$('a');
 const AR='٠١٢٣٤٥٦٧٨٩',ar=n=>String(n).replace(/\d/g,d=>AR[d]);
 const fmt=s=>{s=Math.max(0,s|0);const h=s/3600|0,m=(s%3600)/60|0,x=s%60;return(h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0')};
-let D,ev=[],W=[],cur=-1,rep=false,drag=false,spans=[],lastTop=-1;
+let base0=0,D,ev=[],cur=-1,curCard=null,rep=false,drag=false,spans=[],lastTop=-1,cardIdx={};
 const q=new URLSearchParams(location.search);
 fetch((q.get('d')||'data.json')+'?v='+Date.now()).then(r=>r.json()).then(d=>{
  D=d;ev=d.ev;$('title').textContent=d.title;$('reciter').textContent=d.reciter;
  $('tags').innerHTML=(d.tags||[]).map(t=>`<span class="tag">${t[0]}: <b>${t[1]}</b></span>`).join('');
- const f=$('flow');f.innerHTML=d.words.map((w,i)=>`<span class="w${w.end?' e':''}" data-i="${i}">${w.t}</span> `).join('');
- spans=[...f.querySelectorAll('span.w')];spans.forEach(sp=>sp.onclick=()=>{const i=+sp.dataset.i;let best=-1;for(let k=0;k<ev.length;k++)if(ev[k][1]===i){best=k;break}if(best>=0)a.currentTime=ev[best][0]});
+ d.words.forEach((w,i)=>{(cardIdx[w.c]=cardIdx[w.c]||[]).push(i)});
  a.src=d.audio;const t=parseFloat(q.get('t'));if(t>0)a.addEventListener('loadedmetadata',()=>{a.currentTime=t},{once:true});
- setWord(0,true);tick();if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{lastTop=-1;setWord(cur<0?0:cur,true)}).catch(()=>{});setTimeout(()=>{lastTop=-1;setWord(cur<0?0:cur,true)},1500);
+ setWord(0,true);tick();
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{lastTop=-1;setWord(cur<0?0:cur,true)}).catch(()=>{});
+ setTimeout(()=>{lastTop=-1;setWord(cur<0?0:cur,true)},1500);
 });
 function find(t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m][0]<=t){r=m;lo=m+1}else hi=m-1}return r}
+function renderCard(c,instant){
+ const f=$('flow'),go=()=>{
+  const ids=cardIdx[c];spans=[];f.innerHTML=ids.map(i=>`<span class="w${D.words[i].end?' e':''}" data-i="${i}">${D.words[i].t}</span> `).join('');
+  spans=[...f.querySelectorAll('span.w')];spans.forEach(sp=>sp.onclick=()=>{const i=+sp.dataset.i;for(let k=0;k<ev.length;k++)if(ev[k][1]===i){a.currentTime=ev[k][0];break}});
+  f.style.transition='none';f.style.transform='translateY(0)';lastTop=-1;base0=0;f.classList.remove('fade');void f.offsetWidth;f.style.transition='';cur=-2;curCard=c;{const lh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lh'))||48;const h=f.scrollHeight;base0=h<3*lh?Math.round((3*lh-h)/2):0;}setWord(curWanted,true)};
+ if(instant||!curCard){go()}else{f.classList.add('fade');setTimeout(go,180)}
+}
+let curWanted=0;
 function setWord(w,force){
+ curWanted=w;const c=D.words[w].c;
+ if(c!==curCard){renderCard(c,force);return}
  if(w===cur&&!force)return;
- const prev=cur;cur=w;
- // mark spoken (all before w in the current pass) and current
- if(prev<0||Math.abs(w-prev)>40||w<prev){spans.forEach((sp,i)=>{sp.className='w'+(D.words[i].end?' e':'')+(i<w?' d':'')+(i===w?' c':'')})}
- else{for(let i=prev;i<=w;i++){const sp=spans[i];sp.classList.remove('c');if(i<w)sp.classList.add('d')}spans[w].classList.add('c')}
- const top=spans[w].offsetTop;
- if(top!==lastTop){lastTop=top;$('flow').style.transform=`translateY(${-top}px)`}
- const wd=D.words[w],v=D.verses[wd.k];
- $('where').textContent='سورة التوبة · الآية '+ar(v.n);$('tt').textContent=v.tafsir;$('taf').style.display='';
+ const base=cardIdx[c][0],k=w-base;
+ spans.forEach((sp,i)=>{sp.classList.toggle('d',i<k);sp.classList.toggle('c',i===k)});
+ cur=w;
+ const top=spans[k]?spans[k].offsetTop:0;
+ if(top!==lastTop){lastTop=top;const lh=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lh'))||48;$('flow').style.transform=`translateY(${base0-Math.max(0,top-lh)}px)`}
+ const v=D.verses[c];
+ $('where').textContent=v.label?v.label:'سورة التوبة · الآية '+ar(v.n);$('tt').textContent=v.tafsir;$('taf').style.display='';
 }
 function tick(){
  if(!D)return;
- const t=a.currentTime,d=a.duration||0;
+ const t=q.get('fake')?+q.get('fake'):a.currentTime,d=a.duration||0;
  if(!drag)$('fill').style.width=d?(t/d*100)+'%':'0';
  $('cur').textContent=fmt(t);$('rem').textContent='-'+fmt(d-t);
  const i=find(t);
  setWord(i<0?0:ev[i][1]);
 }
 a.addEventListener('timeupdate',tick);a.addEventListener('loadedmetadata',tick);setInterval(()=>{if(!a.paused)tick()},80);
-window.addEventListener('resize',()=>{lastTop=-1;if(D)setWord(cur,true)});
+window.addEventListener('resize',()=>{lastTop=-1;if(D)setWord(curWanted,true)});
 const PL='M8 5v14l11-7z',PA='M6 5h4v14H6zm8 0h4v14h-4z';
 $('play').onclick=()=>{a.paused?a.play():a.pause()};
 a.addEventListener('play',()=>{$('ic').innerHTML=`<path d="${PA}"/>`;$('vc').classList.add('live')});
@@ -119,7 +131,7 @@ function seekTo(x){const r=$('track').getBoundingClientRect();const p=Math.min(1
 $('track').addEventListener('pointerdown',e=>{drag=true;$('track').setPointerCapture(e.pointerId);seekTo(e.clientX)});
 $('track').addEventListener('pointermove',e=>{if(drag)seekTo(e.clientX)});
 $('track').addEventListener('pointerup',()=>drag=false);
-function vk(i){return D.words[ev[i][1]].k}
+function vk(i){return D.words[ev[i][1]].c}
 function jump(dir){const t=a.currentTime;let i=find(t);if(i<0)i=0;
  if(dir>0){for(let j=i+1;j<ev.length;j++){if(vk(j)!==vk(i)){a.currentTime=ev[j][0];return}}}
  else{let st=i;while(st>0&&vk(st-1)===vk(i))st--;if(t-ev[st][0]>3){a.currentTime=ev[st][0];return}
