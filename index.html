@@ -38,8 +38,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family
 #flow{font-size:23px;line-height:var(--lh);text-align:justify;text-align-last:center;width:100%;color:#9a9582;margin:0;transition:transform .35s cubic-bezier(.3,.7,.2,1);will-change:transform}
 #flow.pop{animation:pop .16s ease-out}
 @keyframes pop{from{opacity:.2}to{opacity:1}}
-#flow span.w{border-radius:10px;transition:color .1s,background-color .1s;padding:0 1px}
-#flow span.d{color:var(--ink)}
+#flow span.w{border-radius:10px;transition:color .1s,background-color .1s;padding:0 1px;visibility:hidden}
+#flow span.v{visibility:visible;animation:inw .2s ease-out}
+@keyframes inw{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+#flow span.v{color:var(--ink)}
 #flow span.c{color:var(--g2);background:var(--gl);box-shadow:0 0 0 3px var(--gl)}
 #flow span.e{color:var(--g)}
 #taf{background:var(--soft);border:1px solid var(--line);border-radius:20px;padding:12px 16px;text-align:right}
@@ -118,7 +120,8 @@ function setWord(w,force){
  if(c!==curCard)renderCard(c);
  else if(w===cur&&!force)return;
  const base=cardIdx[c][0],k=w-base;
- spans.forEach((sp,i)=>{sp.classList.toggle('d',i<k);sp.classList.toggle('c',i===k)});
+ let vis=k;const ids=cardIdx[c];while(vis+1<ids.length&&(D.words[ids[vis+1]].br||D.words[ids[vis+1]].end))vis++;
+ spans.forEach((sp,i)=>{sp.classList.toggle('v',i<=vis);sp.classList.toggle('c',i===k)});
  cur=w;
  const top=spans[k]?spans[k].offsetTop:0;
  if(top!==lastTop){lastTop=top;$('flow').style.transform=`translateY(${base0-Math.max(0,top-LH())}px)`}
