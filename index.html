@@ -7,7 +7,7 @@
 <title>تدبّر</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#050605;--sheet:#0c0e0b;--card:#101310;--line:#232a1c;--lime:#c9e81f;--lime2:#9db615;--txt:#f2f4ee;--mut:#8f9886}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
@@ -24,19 +24,22 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family
 #tags{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 0}
 .tag{font-size:11.5px;color:#d5dbc9;background:#13170f;border:1px solid var(--line);border-radius:10px;padding:2px 9px;line-height:1.7}
 .tag b{color:var(--lime);font-weight:600}
+@font-face{font-family:'KFGQPC';src:url(https://raw.githubusercontent.com/nuqayah/qpc-fonts/master/mushaf-v4-hafs/uthmanic_hafs_v22.ttf) format('truetype');font-display:block}
 #stage{flex:1;min-height:0;overflow-y:auto;padding:14px 0 6px;display:flex;flex-direction:column;gap:12px;scrollbar-width:none}
 #stage::-webkit-scrollbar{display:none}
-.vcard{border:1px solid #2a3320;border-radius:18px;background:linear-gradient(180deg,#121610,#0d100b);padding:22px 16px;text-align:center;position:relative;transition:border-color .4s}
-.vcard.live{border-color:#3d4a22}
-#verse{font-family:'Amiri Quran','Noto Naskh Arabic',serif;font-size:clamp(25px,6.3vw,33px);line-height:2.25;color:#eef1e8;transition:opacity .3s ease,transform .3s ease}
-#verse.out{opacity:0;transform:translateY(6px)}
-.num{display:inline-grid;place-items:center;width:1.55em;height:1.55em;margin:0 .3em;border:1.5px solid var(--lime2);border-radius:50%;color:var(--lime);font-size:.5em;vertical-align:middle;font-family:'Amiri Quran',serif;line-height:1}
-#where{margin-top:8px;font-size:13px;color:var(--mut)}
-#note{display:none;margin-top:8px;font-size:12px;color:#0b0d07;background:var(--lime);border-radius:10px;padding:1px 10px}
-#taf{border:1px solid var(--line);border-radius:16px;background:#0e110c;padding:14px 16px;text-align:right;transition:opacity .3s}
+.vcard{border:1px solid #2a3320;border-radius:16px;background:#0e110c;padding:6px 14px;text-align:right;position:relative}
+#win{height:calc(2 * var(--lh));overflow:hidden;position:relative}
+:root{--lh:46px}
+#flow{font-family:'KFGQPC','Noto Naskh Arabic',serif;font-size:21px;line-height:var(--lh);text-align:justify;text-align-last:right;color:#6f7766;transition:transform .45s cubic-bezier(.3,.7,.2,1);will-change:transform;margin:0;padding:0}
+#flow span.w{transition:color .15s}
+#flow span.d{color:#eef1e8}
+#flow span.c{color:var(--lime);text-shadow:0 0 14px rgba(201,232,31,.45)}
+#flow span.e{color:var(--lime2);font-size:.9em}
+#where{margin-top:2px;font-size:12px;color:var(--mut);text-align:center;padding-bottom:4px}
+#taf{border:1px solid var(--line);border-radius:16px;background:#0e110c;padding:12px 16px;text-align:right}
 #taf h4{margin:0 0 6px;font-size:13px;color:var(--lime);font-weight:600;display:flex;align-items:center;gap:6px}
 #taf h4::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--lime)}
-#tt{font-size:17.5px;line-height:2;color:#cfd6c4}
+#tt{font-size:15px;line-height:1.9;color:#cfd6c4}
 #prog{margin-top:8px}
 #track{position:relative;height:12px;background:#262b20;border-radius:12px;direction:ltr;cursor:pointer;touch-action:none}
 #fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--lime);border-radius:12px}
@@ -58,7 +61,7 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family
   <div id="meta"><div id="title">…</div><div id="reciter"></div><div id="tags"></div></div>
  </div>
  <div id="stage">
-  <div class="vcard" id="vc"><div id="verse">جارٍ التحميل…</div><div id="where"></div><div id="note">تكرار من القارئ</div></div>
+  <div class="vcard" id="vc"><div id="win"><div id="flow">جارٍ التحميل…</div></div></div><div id="where"></div>
   <div id="taf" style="display:none"><h4>التفسير الميسَّر</h4><div id="tt"></div></div>
  </div>
  <div id="prog"><div id="track"><div id="fill"></div></div><div id="times"><span id="cur">00:00</span><span id="rem">-00:00</span></div></div>
@@ -75,31 +78,38 @@ const tg=window.Telegram&&Telegram.WebApp;if(tg){try{tg.ready();tg.expand();tg.s
 const $=id=>document.getElementById(id),a=$('a');
 const AR='٠١٢٣٤٥٦٧٨٩',ar=n=>String(n).replace(/\d/g,d=>AR[d]);
 const fmt=s=>{s=Math.max(0,s|0);const h=s/3600|0,m=(s%3600)/60|0,x=s%60;return(h?h+':'+String(m).padStart(2,'0'):String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0')};
-let D,ev=[],idx=-1,rep=false,drag=false;
+let D,ev=[],W=[],cur=-1,rep=false,drag=false,spans=[],lastTop=-1;
 const q=new URLSearchParams(location.search);
 fetch((q.get('d')||'data.json')+'?v='+Date.now()).then(r=>r.json()).then(d=>{
- D=d;ev=d.events;$('title').textContent=d.title;$('reciter').textContent=d.reciter;
+ D=d;ev=d.ev;$('title').textContent=d.title;$('reciter').textContent=d.reciter;
  $('tags').innerHTML=(d.tags||[]).map(t=>`<span class="tag">${t[0]}: <b>${t[1]}</b></span>`).join('');
- a.src=d.audio;render(-1);const t=parseFloat(q.get('t'));if(t>0)a.addEventListener('loadedmetadata',()=>{a.currentTime=t},{once:true});tick();
+ const f=$('flow');f.innerHTML=d.words.map((w,i)=>`<span class="w${w.end?' e':''}" data-i="${i}">${w.t}</span> `).join('');
+ spans=[...f.querySelectorAll('span.w')];spans.forEach(sp=>sp.onclick=()=>{const i=+sp.dataset.i;let best=-1;for(let k=0;k<ev.length;k++)if(ev[k][1]===i){best=k;break}if(best>=0)a.currentTime=ev[best][0]});
+ a.src=d.audio;const t=parseFloat(q.get('t'));if(t>0)a.addEventListener('loadedmetadata',()=>{a.currentTime=t},{once:true});
+ document.fonts.ready.then(()=>{setWord(0,true);tick()});
 });
-function find(t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m].s<=t){r=m;lo=m+1}else hi=m-1}return r}
-function show(i){const vt=$('verse');if(idx!==-1&&i!==-1&&i!==idx){vt.classList.add('out');setTimeout(()=>{render(i);vt.classList.remove('out')},160)}else render(i)}
-function render(i){
- idx=i;const e=ev[i];const vt=$('verse');
- if(!e||!e.k){vt.textContent=e&&e.label?e.label:'اضغط تشغيل';$('where').textContent='';$('taf').style.display='none';$('note').style.display='none';return}
- const v=D.verses[e.k];vt.innerHTML=v.text+`<span class="num">${ar(v.n)}</span>`;
- $('where').textContent='سورة '+v.sn+' · الآية '+ar(v.n);$('tt').textContent=v.tafsir;$('taf').style.display='';
- $('note').style.display=e.rep?'inline-block':'none';
+function find(t){let lo=0,hi=ev.length-1,r=-1;while(lo<=hi){const m=(lo+hi)>>1;if(ev[m][0]<=t){r=m;lo=m+1}else hi=m-1}return r}
+function setWord(w,force){
+ if(w===cur&&!force)return;
+ const prev=cur;cur=w;
+ // mark spoken (all before w in the current pass) and current
+ if(prev<0||Math.abs(w-prev)>40||w<prev){spans.forEach((sp,i)=>{sp.className='w'+(D.words[i].end?' e':'')+(i<w?' d':'')+(i===w?' c':'')})}
+ else{for(let i=prev;i<=w;i++){const sp=spans[i];sp.classList.remove('c');if(i<w)sp.classList.add('d')}spans[w].classList.add('c')}
+ const top=spans[w].offsetTop;
+ if(top!==lastTop){lastTop=top;$('flow').style.transform=`translateY(${-top}px)`}
+ const wd=D.words[w],v=D.verses[wd.k];
+ $('where').textContent='سورة التوبة · الآية '+ar(v.n);$('tt').textContent=v.tafsir;$('taf').style.display='';
 }
 function tick(){
+ if(!D)return;
  const t=a.currentTime,d=a.duration||0;
  if(!drag)$('fill').style.width=d?(t/d*100)+'%':'0';
  $('cur').textContent=fmt(t);$('rem').textContent='-'+fmt(d-t);
  const i=find(t);
- if(rep&&idx>=0&&i!==idx&&ev[idx]&&ev[idx].k&&!a.paused&&i>idx){a.currentTime=ev[idx].s;return}
- if(i!==idx)show(i);
+ setWord(i<0?0:ev[i][1]);
 }
-a.addEventListener('timeupdate',tick);a.addEventListener('loadedmetadata',tick);setInterval(()=>{if(!a.paused)tick()},150);
+a.addEventListener('timeupdate',tick);a.addEventListener('loadedmetadata',tick);setInterval(()=>{if(!a.paused)tick()},80);
+window.addEventListener('resize',()=>{lastTop=-1;if(D)setWord(cur,true)});
 const PL='M8 5v14l11-7z',PA='M6 5h4v14H6zm8 0h4v14h-4z';
 $('play').onclick=()=>{a.paused?a.play():a.pause()};
 a.addEventListener('play',()=>{$('ic').innerHTML=`<path d="${PA}"/>`;$('vc').classList.add('live')});
@@ -108,11 +118,13 @@ function seekTo(x){const r=$('track').getBoundingClientRect();const p=Math.min(1
 $('track').addEventListener('pointerdown',e=>{drag=true;$('track').setPointerCapture(e.pointerId);seekTo(e.clientX)});
 $('track').addEventListener('pointermove',e=>{if(drag)seekTo(e.clientX)});
 $('track').addEventListener('pointerup',()=>drag=false);
+function vk(i){return D.words[ev[i][1]].k}
 function jump(dir){const t=a.currentTime;let i=find(t);if(i<0)i=0;
- if(dir>0){for(let j=i+1;j<ev.length;j++){if(ev[j].k&&ev[j].k!==ev[i].k){a.currentTime=ev[j].s;return}}}
- else{let st=i;while(st>0&&ev[st-1].k===ev[i].k)st--;if(t-ev[st].s>3){a.currentTime=ev[st].s;return}
-  for(let j=st-1;j>=0;j--){if(ev[j].k){let s=j;while(s>0&&ev[s-1].k===ev[j].k)s--;a.currentTime=ev[s].s;return}}a.currentTime=0}}
+ if(dir>0){for(let j=i+1;j<ev.length;j++){if(vk(j)!==vk(i)){a.currentTime=ev[j][0];return}}}
+ else{let st=i;while(st>0&&vk(st-1)===vk(i))st--;if(t-ev[st][0]>3){a.currentTime=ev[st][0];return}
+  if(st>0){let s2=st-1;while(s2>0&&vk(s2-1)===vk(st-1))s2--;a.currentTime=ev[s2][0];return}a.currentTime=0}}
 $('next').onclick=()=>jump(1);$('prev').onclick=()=>jump(-1);
 $('rep').onclick=()=>{rep=!rep;$('rep').classList.toggle('on',rep)};
+setInterval(()=>{if(!rep||a.paused||!D)return;const i=find(a.currentTime);if(i<0)return;let st=i;while(st>0&&vk(st-1)===vk(i))st--;let en=i;while(en<ev.length-1&&vk(en+1)===vk(i))en++;if(en<ev.length-1&&a.currentTime>=ev[en+1][0]-0.1)a.currentTime=ev[st][0]},120);
 </script>
 </body></html>
